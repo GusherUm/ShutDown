@@ -1,0 +1,15 @@
+/* CSS to remove default margin and padding */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Ensures the body takes the full height of the viewport */
+    overflow: hidden; /* Prevents scrolling */
+}
+
+/* CSS to make the image cover the entire viewport */
+img {
+    width: 100vw; /* Sets the width to 100% of the viewport width */
+    height: 100vh; /* Sets the height to 100% of the viewport height */
+    object-fit: cover; /* Ensures the image covers the area without distortion */
+    display: block; /* Removes any extra space below the image */
+}

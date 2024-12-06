@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Interface</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        #timer-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #timer {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <img alt="kung-fu-panda-i1" src="i1.jpeg">
+
+    <div id="timer-container">
+        <input type="number" id="minutes" placeholder="Enter minutes" min="1">
+        <button id="start-timer">Start Timer & Schedule Shutdown</button>
+        <div id="timer">00:00</div>
+    </div>
+
+    <script>
+        let countdown;
+        const timerDisplay = document.getElementById('timer');
+        const startButton = document.getElementById('start-timer');
+
+        // async function shutdownComputer() {
+        //     try {
+        //         const response = await fetch('http://localhost:3000/shutdown', {
+        //             method: 'POST'
+        //         });
+        //         if (!response.ok) {
+        //             throw new Error('Shutdown command failed');
+        //         }
+        //     } catch (error) {
+        //         console.error('Error:', error);
+        //         alert('Failed to initiate shutdown. Please shutdown manually.');
+        //     }
+        // }
+
+        async function shutdownComputer() {
+            try {
+                // Send shutdown request to the Electron main process
+                await window.electronAPI.shutdown();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to initiate shutdown. Please shutdown manually.');
+            }
+        }
+
+
+        startButton.addEventListener('click', function() {
+            const minutes = parseInt(document.getElementById('minutes').value);
+            if (isNaN(minutes) || minutes <= 0) {
+                alert("Please enter a valid number of minutes.");
+                return;
+            }
+
+            if (!confirm("This will shutdown your computer when the timer ends. Continue?")) {
+                return;
+            }
+
+            clearInterval(countdown);
+            const totalSeconds = minutes * 60;
+            let remainingSeconds = totalSeconds;
+
+            countdown = setInterval(() => {
+                const minutesLeft = Math.floor(remainingSeconds / 60);
+                const secondsLeft = remainingSeconds % 60;
+
+                timerDisplay.textContent = `${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
+
+                if (remainingSeconds <= 0) {
+                    clearInterval(countdown);
+                    alert("Time's up! Initiating shutdown...");
+                    shutdownComputer();
+                }
+
+                remainingSeconds--;
+            }, 1000);
+        });
+
+    </script>
+</body>
+</html>
